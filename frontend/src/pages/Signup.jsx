@@ -27,8 +27,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6 origin-top">
+      <div className="w-full max-w-md scale-90 sm:scale-100">
         <div className="flex justify-center mb-8">
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-xl shadow-emerald-900/30">
             <span className="text-white font-bold text-2xl">₹</span>
