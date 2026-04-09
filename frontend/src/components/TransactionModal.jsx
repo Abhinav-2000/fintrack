@@ -59,99 +59,172 @@ export default function TransactionModal({ transaction, onClose, onSaved }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={e => e.target === e.currentTarget && onClose()}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 50,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '12px',
+        background: 'rgba(0,0,0,0.7)',
+        backdropFilter: 'blur(4px)'
+      }}
     >
-      <div
-        className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md shadow-2xl animate-slide-up flex flex-col"
-        style={{ maxHeight: '90vh' }}
-      >
-        {/* Fixed Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800 flex-shrink-0">
-          <h2 className="text-white font-semibold text-base">{isEdit ? 'Edit Transaction' : 'New Transaction'}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-2xl leading-none transition-colors">×</button>
+      <div style={{
+        background: '#111827',
+        border: '1px solid #374151',
+        borderRadius: '16px',
+        width: '100%',
+        maxWidth: '440px',
+        maxHeight: '88vh',
+        display: 'flex',
+        flexDirection: 'column',
+        boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
+      }}>
+
+        {/* HEADER - fixed, never scrolls */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 16px',
+          borderBottom: '1px solid #1f2937',
+          flexShrink: 0
+        }}>
+          <span style={{ color: 'white', fontWeight: 600, fontSize: '15px' }}>
+            {isEdit ? 'Edit Transaction' : 'New Transaction'}
+          </span>
+          <button onClick={onClose} style={{
+            color: '#6b7280', background: 'none', border: 'none',
+            fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px'
+          }}>×</button>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="overflow-y-auto flex-1 px-5 py-4">
-          <form onSubmit={handleSubmit} id="tx-form" className="space-y-3">
+        {/* BODY - scrolls */}
+        <div style={{ overflowY: 'auto', flex: 1, padding: '12px 16px' }}>
+          <form onSubmit={handleSubmit} id="tx-form">
 
-            {/* Type Toggle */}
-            <div className="flex rounded-xl overflow-hidden border border-gray-700">
+            {/* Type toggle */}
+            <div style={{
+              display: 'flex', borderRadius: '10px', overflow: 'hidden',
+              border: '1px solid #374151', marginBottom: '10px'
+            }}>
               {['expense', 'income'].map(t => (
-                <button key={t} type="button" onClick={() => setForm({...form, type: t, category: ''})}
-                  className={`flex-1 py-2 text-sm font-semibold capitalize transition-all ${
-                    form.type === t
-                      ? t === 'income' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
-                      : 'text-gray-400 hover:text-white'
-                  }`}>{t}</button>
+                <button key={t} type="button"
+                  onClick={() => setForm({...form, type: t, category: ''})}
+                  style={{
+                    flex: 1, padding: '8px', fontSize: '13px', fontWeight: 600,
+                    textTransform: 'capitalize', border: 'none', cursor: 'pointer',
+                    background: form.type === t
+                      ? (t === 'income' ? '#10b981' : '#ef4444')
+                      : 'transparent',
+                    color: form.type === t ? 'white' : '#9ca3af'
+                  }}>{t}</button>
               ))}
             </div>
 
             {/* Amount */}
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">Amount</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm">₹</span>
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', marginBottom: '4px', fontWeight: 500 }}>Amount</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '13px' }}>₹</span>
                 <input type="number" min="0.01" step="0.01" required value={form.amount}
                   onChange={e => setForm({...form, amount: e.target.value})}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 pl-7 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                  placeholder="0.00" />
+                  placeholder="0.00"
+                  style={{
+                    width: '100%', background: '#1f2937', border: '1px solid #374151',
+                    borderRadius: '10px', padding: '8px 10px 8px 26px',
+                    color: 'white', fontSize: '13px', boxSizing: 'border-box',
+                    outline: 'none'
+                  }} />
               </div>
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
-              <div className="grid grid-cols-3 gap-1.5 max-h-36 overflow-y-auto">
+            {/* Category grid */}
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', marginBottom: '4px', fontWeight: 500 }}>Category</label>
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '6px', maxHeight: '130px', overflowY: 'auto'
+              }}>
                 {filteredCats.map(c => (
-                  <button key={c._id} type="button" onClick={() => setForm({...form, category: c.name})}
-                    className={`flex flex-col items-center gap-0.5 p-2 rounded-xl text-xs font-medium transition-all border ${
-                      form.category === c.name
-                        ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
-                        : 'border-gray-700 text-gray-400 hover:border-gray-600 hover:text-white'
-                    }`}>
-                    <span className="text-base">{c.icon}</span>
-                    <span className="truncate w-full text-center leading-tight">{c.name}</span>
+                  <button key={c._id} type="button"
+                    onClick={() => setForm({...form, category: c.name})}
+                    style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      gap: '2px', padding: '7px 4px', borderRadius: '10px',
+                      fontSize: '11px', fontWeight: 500, cursor: 'pointer',
+                      border: form.category === c.name ? '1px solid #10b981' : '1px solid #374151',
+                      background: form.category === c.name ? 'rgba(16,185,129,0.1)' : 'transparent',
+                      color: form.category === c.name ? '#34d399' : '#9ca3af'
+                    }}>
+                    <span style={{ fontSize: '15px' }}>{c.icon}</span>
+                    <span style={{ textAlign: 'center', wordBreak: 'break-word', lineHeight: 1.2 }}>{c.name}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Date + Notes side by side */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Date + Notes row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Date</label>
+                <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', marginBottom: '4px', fontWeight: 500 }}>Date</label>
                 <input type="date" required value={form.date}
                   onChange={e => setForm({...form, date: e.target.value})}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+                  style={{
+                    width: '100%', background: '#1f2937', border: '1px solid #374151',
+                    borderRadius: '10px', padding: '8px 10px', color: 'white',
+                    fontSize: '12px', boxSizing: 'border-box', outline: 'none'
+                  }} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Notes <span className="text-gray-600">(optional)</span></label>
-                <input type="text" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                  placeholder="e.g. Lunch" />
+                <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', marginBottom: '4px', fontWeight: 500 }}>Notes <span style={{ color: '#4b5563' }}>(optional)</span></label>
+                <input type="text" value={form.notes}
+                  onChange={e => setForm({...form, notes: e.target.value})}
+                  placeholder="e.g. Lunch"
+                  style={{
+                    width: '100%', background: '#1f2937', border: '1px solid #374151',
+                    borderRadius: '10px', padding: '8px 10px', color: 'white',
+                    fontSize: '12px', boxSizing: 'border-box', outline: 'none'
+                  }} />
               </div>
             </div>
 
             {/* Tags */}
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">Tags <span className="text-gray-600">(comma-separated)</span></label>
-              <input type="text" value={form.tags} onChange={e => setForm({...form, tags: e.target.value})}
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                placeholder="work, personal, urgent" />
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: '#9ca3af', marginBottom: '4px', fontWeight: 500 }}>
+                Tags <span style={{ color: '#4b5563' }}>(comma-separated)</span>
+              </label>
+              <input type="text" value={form.tags}
+                onChange={e => setForm({...form, tags: e.target.value})}
+                placeholder="work, personal, urgent"
+                style={{
+                  width: '100%', background: '#1f2937', border: '1px solid #374151',
+                  borderRadius: '10px', padding: '8px 10px', color: 'white',
+                  fontSize: '12px', boxSizing: 'border-box', outline: 'none'
+                }} />
             </div>
 
             {/* Recurring */}
-            <div className="flex items-center gap-3">
-              <button type="button" onClick={() => setForm({...form, isRecurring: !form.isRecurring})}
-                className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${form.isRecurring ? 'bg-emerald-500' : 'bg-gray-700'}`}>
-                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${form.isRecurring ? 'translate-x-4' : ''}`} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button type="button"
+                onClick={() => setForm({...form, isRecurring: !form.isRecurring})}
+                style={{
+                  position: 'relative', width: '36px', height: '20px',
+                  borderRadius: '99px', border: 'none', cursor: 'pointer', flexShrink: 0,
+                  background: form.isRecurring ? '#10b981' : '#374151', transition: 'background 0.2s'
+                }}>
+                <span style={{
+                  position: 'absolute', top: '2px',
+                  left: form.isRecurring ? '18px' : '2px',
+                  width: '16px', height: '16px', borderRadius: '50%',
+                  background: 'white', transition: 'left 0.2s'
+                }} />
               </button>
-              <span className="text-gray-300 text-sm">Recurring</span>
+              <span style={{ color: '#d1d5db', fontSize: '13px' }}>Recurring</span>
               {form.isRecurring && (
-                <select value={form.recurringFrequency} onChange={e => setForm({...form, recurringFrequency: e.target.value})}
-                  className="ml-auto bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:border-emerald-500">
+                <select value={form.recurringFrequency}
+                  onChange={e => setForm({...form, recurringFrequency: e.target.value})}
+                  style={{
+                    marginLeft: 'auto', background: '#1f2937', border: '1px solid #374151',
+                    borderRadius: '8px', padding: '4px 8px', color: 'white', fontSize: '12px', outline: 'none'
+                  }}>
                   {['daily','weekly','monthly','yearly'].map(f => <option key={f} value={f}>{f}</option>)}
                 </select>
               )}
@@ -160,14 +233,24 @@ export default function TransactionModal({ transaction, onClose, onSaved }) {
           </form>
         </div>
 
-        {/* Fixed Footer */}
-        <div className="flex gap-3 px-5 py-4 border-t border-gray-800 flex-shrink-0">
-          <button type="button" onClick={onClose}
-            className="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-medium py-2.5 rounded-xl transition-colors text-sm">
-            Cancel
-          </button>
-          <button type="submit" form="tx-form" disabled={loading}
-            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold py-2.5 rounded-xl transition-all disabled:opacity-50 text-sm">
+        {/* FOOTER - fixed, never scrolls */}
+        <div style={{
+          display: 'flex', gap: '10px',
+          padding: '12px 16px',
+          borderTop: '1px solid #1f2937',
+          flexShrink: 0
+        }}>
+          <button type="button" onClick={onClose} style={{
+            flex: 1, background: '#1f2937', border: '1px solid #374151',
+            color: 'white', fontWeight: 500, padding: '10px',
+            borderRadius: '10px', cursor: 'pointer', fontSize: '13px'
+          }}>Cancel</button>
+          <button type="submit" form="tx-form" disabled={loading} style={{
+            flex: 1,
+            background: loading ? '#065f46' : 'linear-gradient(135deg, #10b981, #0d9488)',
+            border: 'none', color: 'white', fontWeight: 600,
+            padding: '10px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px'
+          }}>
             {loading ? 'Saving...' : isEdit ? 'Update' : 'Add Transaction'}
           </button>
         </div>
